@@ -1,8 +1,9 @@
 package ru.javaops.masterjava.matrix;
 
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * gkislin
@@ -13,8 +14,38 @@ public class MatrixUtil {
     // TODO implement parallel multiplication matrixA*matrixB
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
         final int matrixSize = matrixA.length;
-//        final int[][] matrixC = new int[matrixSize][matrixSize];
-        final int[][] matrixC = singleThreadMultiply(matrixA,matrixB);
+        final int[][] matrixC = new int[matrixSize][matrixSize];
+
+        final CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
+
+        Set<Future<Void>> futures = new HashSet<>();
+
+        for (int i = 0; i < matrixSize; i++) {
+            final int j = i;
+            futures.add(completionService.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    int[] matrixBRow = new int[matrixSize];
+                    for (int k = 0; k < matrixSize; k++) {
+                        matrixBRow[k] = matrixB[k][j];
+                    }
+                    for (int k = 0; k < matrixSize; k++) {
+                        int sum = 0;
+                        int[] matrixARow = matrixA[k];
+                        for (int l = 0; l < matrixSize; l++) {
+                            sum += matrixARow[l] * matrixBRow[l];
+                        }
+                        matrixC[k][j] = sum;
+                    }
+                    return null;
+                }
+            }));
+        }
+
+        while (!futures.isEmpty()) {
+            Future<Void> take = completionService.take();
+            futures.remove(take);
+        }
 
         return matrixC;
     }
