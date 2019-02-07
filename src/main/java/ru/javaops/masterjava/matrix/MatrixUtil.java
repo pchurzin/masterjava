@@ -16,9 +16,7 @@ public class MatrixUtil {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
-        final CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
-
-        Set<Future<Void>> futures = IntStream.range(0, matrixSize).mapToObj(i -> completionService.submit(() -> {
+        final List<Callable<Void>> tasks = IntStream.range(0, matrixSize).mapToObj(i -> (Callable<Void>) () -> {
             final int[] matrixBRow = new int[matrixSize];
             for (int k = 0; k < matrixSize; k++) {
                 matrixBRow[k] = matrixB[k][i];
@@ -32,17 +30,13 @@ public class MatrixUtil {
                 matrixC[k][i] = sum;
             }
             return null;
-        })).collect(Collectors.toCollection(HashSet::new));
-
-        while (!futures.isEmpty()) {
-            Future<Void> take = completionService.take();
-            futures.remove(take);
-        }
+        }).collect(Collectors.toList());
+        executor.invokeAll(tasks);
 
         return matrixC;
     }
 
-    // TODO optimize by https://habrahabr.ru/post/114797/
+    // optimized by https://habrahabr.ru/post/114797/
     public static int[][] singleThreadMultiply(int[][] matrixA, int[][] matrixB) {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
