@@ -18,29 +18,21 @@ public class MatrixUtil {
 
         final CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
 
-        Set<Future<Void>> futures = new HashSet<>();
-
-        for (int i = 0; i < matrixSize; i++) {
-            final int j = i;
-            futures.add(completionService.submit(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    int[] matrixBRow = new int[matrixSize];
-                    for (int k = 0; k < matrixSize; k++) {
-                        matrixBRow[k] = matrixB[k][j];
-                    }
-                    for (int k = 0; k < matrixSize; k++) {
-                        int sum = 0;
-                        int[] matrixARow = matrixA[k];
-                        for (int l = 0; l < matrixSize; l++) {
-                            sum += matrixARow[l] * matrixBRow[l];
-                        }
-                        matrixC[k][j] = sum;
-                    }
-                    return null;
+        Set<Future<Void>> futures = IntStream.range(0, matrixSize).mapToObj(i -> completionService.submit(() -> {
+            final int[] matrixBRow = new int[matrixSize];
+            for (int k = 0; k < matrixSize; k++) {
+                matrixBRow[k] = matrixB[k][i];
+            }
+            for (int k = 0; k < matrixSize; k++) {
+                int sum = 0;
+                final int[] matrixARow = matrixA[k];
+                for (int l = 0; l < matrixSize; l++) {
+                    sum += matrixARow[l] * matrixBRow[l];
                 }
-            }));
-        }
+                matrixC[k][i] = sum;
+            }
+            return null;
+        })).collect(Collectors.toCollection(HashSet::new));
 
         while (!futures.isEmpty()) {
             Future<Void> take = completionService.take();
