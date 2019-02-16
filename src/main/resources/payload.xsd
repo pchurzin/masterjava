@@ -78,11 +78,21 @@
         </xs:simpleContent>
     </xs:complexType>
 
-
     <xs:complexType name="projectType">
         <xs:all>
             <xs:element type="xs:string" name="Name" />
             <xs:element type="xs:string" name="Description" />
+            <xs:element name="Groups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Group" maxOccurs="unbounded">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string" />
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:all>
         <xs:attribute type="xs:string" name="id" use="required" />
     </xs:complexType>
@@ -103,5 +113,4 @@
             <xs:enumeration value="finished" />
         </xs:restriction>
     </xs:simpleType>
-
 </xs:schema>
