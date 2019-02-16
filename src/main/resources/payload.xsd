@@ -98,12 +98,23 @@
     </xs:complexType>
 
     <xs:complexType name="groupType">
-        <xs:simpleContent>
-            <xs:extension base="xs:string">
-                <xs:attribute name="type" type="groupTypeType" use="required" />
-                <xs:attribute type="xs:string" name="id" use="required" />
-            </xs:extension>
-        </xs:simpleContent>
+        <xs:all>
+            <xs:element type="xs:string" name="Name" />
+            <xs:element type="xs:string" name="Description" />
+            <xs:element name="Users">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="User" maxOccurs="unbounded">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string" />
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+        <xs:attribute name="type" type="groupTypeType" use="required" />
+        <xs:attribute type="xs:string" name="id" use="required" />
     </xs:complexType>
 
     <xs:simpleType name="groupTypeType">
