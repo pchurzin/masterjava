@@ -22,6 +22,10 @@
                             <xs:element name="User" type="userType" />
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:key name="userId">
+                        <xs:selector xpath="j:User"/>
+                        <xs:field xpath="@email"/>
+                    </xs:key>
                     <xs:keyref name="city" refer="j:cityId">
                         <xs:selector xpath="User" />
                         <xs:field xpath="@city" />
