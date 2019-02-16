@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://javaops.ru" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://javaops.ru"
-    elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://javaops.ru" xmlns:j="http://javaops.ru" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://javaops.ru" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
     <xs:element name="Payload">
         <xs:complexType>
@@ -11,6 +11,10 @@
                             <xs:element name="City" type="cityType" />
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:key name="cityId">
+                        <xs:selector xpath="j:City" />
+                        <xs:field xpath="@id" />
+                    </xs:key>
                 </xs:element>
                 <xs:element name="Users" minOccurs="0">
                     <xs:complexType>
@@ -18,6 +22,10 @@
                             <xs:element name="User" type="userType" />
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:keyref name="city" refer="j:cityId">
+                        <xs:selector xpath="User" />
+                        <xs:field xpath="@city" />
+                    </xs:keyref>
                 </xs:element>
                 <xs:element name="Projects" minOccurs="0">
                     <xs:complexType>
@@ -25,6 +33,21 @@
                             <xs:element name="Project" type="projectType" />
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:key name="projectId">
+                        <xs:selector xpath="j:Project" />
+                        <xs:field xpath="@id" />
+                    </xs:key>
+                </xs:element>
+                <xs:element name="Groups" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded">
+                            <xs:element name="Group" type="groupType" />
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:key name="groupId">
+                        <xs:selector xpath="j:Group" />
+                        <xs:field xpath="@id" />
+                    </xs:key>
                 </xs:element>
             </xs:all>
         </xs:complexType>
@@ -36,7 +59,7 @@
             <xs:element type="xs:string" name="fullName" />
         </xs:sequence>
         <xs:attribute type="flagType" name="flag" use="required" />
-        <xs:attribute type="xs:IDREF" name="city" use="required" />
+        <xs:attribute type="xs:string" name="city" use="required" />
     </xs:complexType>
 
     <xs:simpleType name="flagType">
@@ -50,15 +73,35 @@
     <xs:complexType name="cityType">
         <xs:simpleContent>
             <xs:extension base="xs:string">
-                <xs:attribute type="xs:ID" name="id" use="required" />
+                <xs:attribute type="xs:string" name="id" use="required" />
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
 
+
     <xs:complexType name="projectType">
         <xs:all>
-            <xs:element type="xs:string" name="name" />
-            <xs:element type="xs:string" name="description" />
+            <xs:element type="xs:string" name="Name" />
+            <xs:element type="xs:string" name="Description" />
         </xs:all>
+        <xs:attribute type="xs:string" name="id" use="required" />
     </xs:complexType>
+
+    <xs:complexType name="groupType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="type" type="groupTypeType" use="required" />
+                <xs:attribute type="xs:string" name="id" use="required" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="groupTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="registering" />
+            <xs:enumeration value="current" />
+            <xs:enumeration value="finished" />
+        </xs:restriction>
+    </xs:simpleType>
+
 </xs:schema>
