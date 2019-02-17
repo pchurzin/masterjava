@@ -2,22 +2,67 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://javaops.ru payload.xsd">
     <Users>
-        <User flag="active" city="kiv">
-            <email>gmail@gmail.com</email>
+        <User flag="active" city="kiv" email="gmail@gmail.com">
             <fullName>Full Name</fullName>
         </User>
-        <User flag="superuser" city="spb">
-            <email>admin@javaops.ru</email>
+        <User flag="superuser" city="spb" email="admin@javaops.ru">
             <fullName>Admin</fullName>
         </User>
-        <User flag="deleted" city="spb">
-            <email>mail@yandex.ru</email>
+        <User flag="deleted" city="spb" email="mail@yandex.ru">
             <fullName>Deleted</fullName>
+        </User>
+        <User flag="active" city="msk" email="pchurzin@pchurzin.ru">
+            <fullName>PChurzin</fullName>
         </User>
     </Users>
     <Cities>
         <City id="spb">Санкт-Петербург</City>
         <City id="kiv">Киев</City>
         <City id="mnsk">Минск</City>
+        <City id="msk">Москва</City>
     </Cities>
+    <Groups>
+        <Group type="finished" id="topjava1">
+            <Name>Topjava 1 group</Name>
+            <Description>Topjava 1 group description</Description>
+            <Users>
+                <User>Admin</User>
+                <User>PChurzin</User>
+                <User>Full Name</User>
+            </Users>
+        </Group>
+        <Group type="current" id="topjava2">
+            <Name>Topjava 2 group</Name>
+            <Description>Topjava 2 group description</Description>
+            <Users>
+                <User>Admin</User>
+                <User>Deleted</User>
+            </Users>
+        </Group>
+        <Group type="registering" id="masterjava3">
+            <Name>masterjava 3 group</Name>
+            <Description>Masterjava 3 group description</Description>
+            <Users>
+                <User>Admin</User>
+                <User>PChurzin</User>
+            </Users>
+        </Group>
+    </Groups>
+    <Projects>
+        <Project id="topjava">
+            <Name>Topjava project</Name>
+            <Description>Topjava project description</Description>
+            <Groups>
+                <Group>topjava1</Group>
+                <Group>topjava2</Group>
+            </Groups>
+        </Project>
+        <Project id="masterjava">
+            <Name>Masterjava project</Name>
+            <Description>Masterjava project description</Description>
+            <Groups>
+                <Group>masterjava3</Group>
+            </Groups>
+        </Project>
+    </Projects>
 </Payload>
