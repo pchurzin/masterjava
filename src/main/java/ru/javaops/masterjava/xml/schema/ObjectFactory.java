@@ -1,10 +1,7 @@
 
 package ru.javaops.masterjava.xml.schema;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**
@@ -24,7 +21,6 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _City_QNAME = new QName("http://javaops.ru", "City");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ru.javaops.masterjava.xml.schema
@@ -42,11 +38,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link User }
+     * Create an instance of {@link ProjectType }
      * 
      */
-    public User createUser() {
-        return new User();
+    public ProjectType createProjectType() {
+        return new ProjectType();
+    }
+
+    /**
+     * Create an instance of {@link GroupType }
+     * 
+     */
+    public GroupType createGroupType() {
+        return new GroupType();
     }
 
     /**
@@ -66,6 +70,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Payload.Projects }
+     * 
+     */
+    public Payload.Projects createPayloadProjects() {
+        return new Payload.Projects();
+    }
+
+    /**
+     * Create an instance of {@link Payload.Groups }
+     * 
+     */
+    public Payload.Groups createPayloadGroups() {
+        return new Payload.Groups();
+    }
+
+    /**
      * Create an instance of {@link CityType }
      * 
      */
@@ -74,12 +94,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CityType }{@code >}}
+     * Create an instance of {@link UserType }
      * 
      */
-    @XmlElementDecl(namespace = "http://javaops.ru", name = "City")
-    public JAXBElement<CityType> createCity(CityType value) {
-        return new JAXBElement<CityType>(_City_QNAME, CityType.class, null, value);
+    public UserType createUserType() {
+        return new UserType();
+    }
+
+    /**
+     * Create an instance of {@link ProjectType.Groups }
+     * 
+     */
+    public ProjectType.Groups createProjectTypeGroups() {
+        return new ProjectType.Groups();
+    }
+
+    /**
+     * Create an instance of {@link GroupType.Users }
+     * 
+     */
+    public GroupType.Users createGroupTypeUsers() {
+        return new GroupType.Users();
     }
 
 }
