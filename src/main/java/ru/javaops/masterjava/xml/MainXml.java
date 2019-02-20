@@ -1,9 +1,7 @@
 package ru.javaops.masterjava.xml;
 
 import com.google.common.io.Resources;
-import ru.javaops.masterjava.xml.schema.ObjectFactory;
-import ru.javaops.masterjava.xml.schema.Payload;
-import ru.javaops.masterjava.xml.schema.ProjectType;
+import ru.javaops.masterjava.xml.schema.*;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.Schemas;
 
@@ -43,19 +41,46 @@ public class MainXml {
             return result;
         }
 
-        Optional<ProjectType> projectType = payload.getProjects().getProject().stream()
-                .filter(pt -> projectId.equals(pt.getId()))
-                .findFirst();
-        if (!projectType.isPresent()) {
-            return result;
-        }
-        List<String> projectGroupsIds = projectType.get().getGroups().getGroup();
-        Set<String> userNames = payload.getGroups().getGroup().stream()
-                .filter(gt -> projectGroupsIds.contains(gt.getId()))
-                .flatMap(gt -> gt.getUsers().getUser().stream())
+        Set<UserType> projectUsers = getProjectUsers(payload, projectId);
+        return projectUsers.stream()
+                .map(UserType::getFullName)
+                .sorted(String::compareTo).collect(Collectors.toList());
+    }
+
+    private static Optional<ProjectType> getProject(Payload payload, String projectId) {
+        return payload.getProjects().getProject().stream()
+                    .filter(pt -> projectId.equals(pt.getId()))
+                    .findFirst();
+    }
+
+    private static Set<GroupType> getProjectGroups(Payload payload, ProjectType project) {
+        Objects.requireNonNull(payload);
+        Objects.requireNonNull(project);
+        return payload.getGroups().getGroup().stream()
+                .filter(gt -> project.getGroups().getGroup().contains(gt.getId()))
                 .collect(Collectors.toSet());
-        result.addAll(userNames);
-        result.sort(String::compareTo);
-        return result;
+    }
+
+    private static Set<UserType> getGroupUsers(Payload payload, GroupType group) {
+        Objects.requireNonNull(payload);
+        Objects.requireNonNull(group);
+        return payload.getUsers().getUser().stream()
+                .filter(ut -> group.getUsers().getUser().contains(ut.getFullName()))
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<UserType> getProjectUsers(Payload payload, String projectId) {
+        Objects.requireNonNull(payload);
+        Objects.requireNonNull(projectId);
+        Set<UserType> projectUsers = new HashSet<>();
+
+        Optional<ProjectType> project = getProject(payload, projectId);
+        if (project.isPresent()) {
+            Set<GroupType> projectGroups = getProjectGroups(payload, project.get());
+            for (GroupType group : projectGroups) {
+                projectUsers.addAll(getGroupUsers(payload, group));
+            }
+        }
+        return projectUsers;
     }
 }
