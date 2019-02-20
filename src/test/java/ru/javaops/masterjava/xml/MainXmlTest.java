@@ -3,7 +3,7 @@ package ru.javaops.masterjava.xml;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
-import static ru.javaops.masterjava.xml.MainXml.getProjectUsers;
+import static ru.javaops.masterjava.xml.MainXml.JaxbImplementation.getProjectUsers;
 
 public class MainXmlTest {
 
