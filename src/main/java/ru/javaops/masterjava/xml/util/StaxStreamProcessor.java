@@ -11,19 +11,21 @@ public class StaxStreamProcessor implements AutoCloseable {
 
     private final XMLStreamReader reader;
 
+    private int currentEvent;
+
     public StaxStreamProcessor(InputStream is) throws XMLStreamException {
         reader = FACTORY.createXMLStreamReader(is);
     }
 
-    public XMLStreamReader getReader() {
+    XMLStreamReader getReader() {
         return reader;
     }
 
     public boolean doUntil(int stopEvent, String value) throws XMLStreamException {
-        while (reader.hasNext()) {
-            int event = reader.next();
-            if (event == stopEvent) {
-                if (value.equals(getValue(event))) {
+        while (hasNext()) {
+            next();
+            if (currentEvent == stopEvent) {
+                if (value.equals(getValue(currentEvent))) {
                     return true;
                 }
             }
@@ -31,7 +33,7 @@ public class StaxStreamProcessor implements AutoCloseable {
         return false;
     }
 
-    public String getValue(int event) throws XMLStreamException {
+    private String getValue(int event) {
         return (event == XMLEvent.CHARACTERS) ? reader.getText() : reader.getLocalName();
     }
 
@@ -41,6 +43,44 @@ public class StaxStreamProcessor implements AutoCloseable {
 
     public String getText() throws XMLStreamException {
         return reader.getElementText();
+    }
+
+    public String getAttributeValue(String name) {
+        for (int i = 0; i < reader.getAttributeCount(); i++) {
+            if (reader.getAttributeLocalName(i).equals(name)) {
+                return reader.getAttributeValue(i);
+            }
+        }
+        return null;
+    }
+
+    public void exitElement(String element) throws XMLStreamException {
+        doUntil(XMLEvent.END_ELEMENT, element);
+    }
+
+    public void consumeElement() throws XMLStreamException {
+        String elementName = reader.getLocalName();
+        doUntil(XMLEvent.END_ELEMENT, elementName);
+    }
+
+    private boolean hasNext() throws XMLStreamException {
+        return reader.hasNext();
+    }
+
+    public void next() throws XMLStreamException {
+        currentEvent = reader.next();
+    }
+
+    public String getElementLocalName() {
+        return reader.hasName() ? reader.getLocalName() : null;
+    }
+
+    public boolean isElementEnded(String name) {
+        return currentEvent == XMLEvent.END_ELEMENT && getElementLocalName().equals(name);
+    }
+
+    public int getEvent() {
+        return currentEvent;
     }
 
     @Override
