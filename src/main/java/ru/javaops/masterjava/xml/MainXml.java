@@ -24,6 +24,10 @@ public class MainXml {
             System.out.println(name);
         }
 
+        for (UserInfo ui : StaxImplementation.getProjectUsers(args[0])) {
+            System.out.println(ui.name + "\t" + ui.email);
+        }
+
     }
 
     static class JaxbImplementation {

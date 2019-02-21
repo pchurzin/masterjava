@@ -37,4 +37,8 @@ public class MainXmlTest {
                 StaxImplementation.getProjectUsers("nosuchproject").toArray());
     }
 
+    @Test
+    public void main() {
+        MainXml.main(new String[]{"masterjava"});
+    }
 }
