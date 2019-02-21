@@ -26,4 +26,17 @@ public class XsltProcessorTest {
         }
 
     }
+
+    @Test
+    public void projectGroupsList() throws Exception {
+        try (InputStream xslInputStream = Resources.getResource("project_groups.xsl").openStream();
+             InputStream xmlInputStream = Resources.getResource("payload.xml").openStream()) {
+
+            XsltProcessor processor = new XsltProcessor(xslInputStream);
+            processor.setParameter("projectId", "topjava");
+            System.out.println(processor.transform(xmlInputStream));
+        }
+
+    }
+
 }
