@@ -52,7 +52,7 @@ public class MainXml {
             Set<UserType> projectUsers = getProjectUsers(payload, projectId);
             return projectUsers.stream()
                     .map(UserType::getFullName)
-                    .sorted(String::compareTo).collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
 
         private static Optional<ProjectType> getProject(Payload payload, String projectId) {
@@ -80,7 +80,8 @@ public class MainXml {
         private static Set<UserType> getProjectUsers(Payload payload, String projectId) {
             Objects.requireNonNull(payload);
             Objects.requireNonNull(projectId);
-            Set<UserType> projectUsers = new HashSet<>();
+            Set<UserType> projectUsers = new TreeSet<>(
+                    Comparator.comparing(UserType::getFullName).thenComparing(UserType::getEmail));
 
             Optional<ProjectType> project = getProject(payload, projectId);
             if (project.isPresent()) {
