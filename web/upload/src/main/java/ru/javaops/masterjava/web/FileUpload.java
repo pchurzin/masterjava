@@ -23,8 +23,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-@WebServlet("/")
-@MultipartConfig(location = "/tmp")
+//@WebServlet("/")
+//@MultipartConfig(location = "/tmp")
 public class FileUpload extends HttpServlet {
 
     private static final Comparator<User> USER_COMPARATOR = Comparator.comparing(User::getValue).thenComparing(User::getEmail);
