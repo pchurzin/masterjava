@@ -4,88 +4,66 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 
 
 /**
- * Marshalling/Unmarshalling JAXB helper
- * XML Facade
+ * Marshalling/Unmarshalling JAXB facade
  */
 public class JaxbParser {
+
+    private JAXBContext ctx;
     protected Schema schema;
-    private JAXBContext context;
-    private Map<String, Object> marshallerProps = new HashMap<>();
 
     public JaxbParser(Class... classesToBeBound) {
         try {
-            context = JAXBContext.newInstance(classesToBeBound);
+            init(JAXBContext.newInstance(classesToBeBound));
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     //    http://stackoverflow.com/questions/30643802/what-is-jaxbcontext-newinstancestring-contextpath
     public JaxbParser(String context) {
         try {
-            this.context = JAXBContext.newInstance(context);
+            init(JAXBContext.newInstance(context));
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalStateException(e);
         }
     }
 
-    // Unmarshaller
-    public <T> T unmarshal(InputStream is) throws JAXBException {
-        JaxbUnmarshaller jaxbUnmarshaller = getJaxbUnmarshaller();
-        return (T) jaxbUnmarshaller.unmarshal(is);
+    private void init(JAXBContext ctx) {
+        this.ctx = ctx;
     }
 
-    public <T> T unmarshal(Reader reader) throws JAXBException {
-        JaxbUnmarshaller jaxbUnmarshaller = new JaxbUnmarshaller(context);
-        return (T) jaxbUnmarshaller.unmarshal(reader);
-    }
-
-    public <T> T unmarshal(String str) throws JAXBException {
-        JaxbUnmarshaller jaxbUnmarshaller = new JaxbUnmarshaller(context);
-        return (T) jaxbUnmarshaller.unmarshal(str);
-    }
-
-    public <T> T unmarshal(XMLStreamReader reader, Class<T> elementClass) throws JAXBException {
-        JaxbUnmarshaller jaxbUnmarshaller = new JaxbUnmarshaller(context);
-        return jaxbUnmarshaller.unmarshal(reader, elementClass);
-    }
-
-    private JaxbUnmarshaller getJaxbUnmarshaller() throws JAXBException {
-        JaxbUnmarshaller jaxbUnmarshaller = new JaxbUnmarshaller(context);
-        if (schema != null) {
-            jaxbUnmarshaller.setSchema(schema);
+    //    https://stackoverflow.com/a/7400735/548473
+    public JaxbMarshaller createMarshaller() {
+        try {
+            JaxbMarshaller marshaller = new JaxbMarshaller(ctx);
+            if (schema != null) {
+                marshaller.setSchema(schema);
+            }
+            return marshaller;
+        } catch (JAXBException e) {
+            throw new IllegalStateException(e);
         }
-        return jaxbUnmarshaller;
     }
 
-
-    // Marshaller
-
-    public String marshal(Object instance) throws JAXBException {
-        JaxbMarshaller jaxbMarshaller = getJaxbMarshaller();
-        return jaxbMarshaller.marshal(instance);
-    }
-
-    public void marshal(Object instance, Writer writer) throws JAXBException {
-        JaxbMarshaller jaxbMarshaller = getJaxbMarshaller();
-        jaxbMarshaller.marshal(instance, writer);
-    }
-
-    private JaxbMarshaller getJaxbMarshaller() throws JAXBException {
-        JaxbMarshaller jaxbMarshaller = new JaxbMarshaller(context);
-        if (schema != null) {
-            jaxbMarshaller.setSchema(schema);
+    //    https://stackoverflow.com/a/7400735/548473
+    public JaxbUnmarshaller createUnmarshaller() {
+        try {
+            JaxbUnmarshaller unmarshaller = new JaxbUnmarshaller(ctx);
+            if (schema != null) {
+                unmarshaller.setSchema(schema);
+            }
+            return unmarshaller;
+        } catch (JAXBException e) {
+            throw new IllegalStateException(e);
         }
-        return jaxbMarshaller;
     }
 
     public void setSchema(Schema schema) {
