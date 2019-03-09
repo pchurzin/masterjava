@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
 public class MatrixUtil {
+
     public static int[][] concurrentMultiplyStreams(int[][] matrixA, int[][] matrixB, int threadNumber)
             throws InterruptedException, ExecutionException {
 
@@ -33,40 +34,6 @@ public class MatrixUtil {
     }
 
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
-        final int matrixSize = matrixA.length;
-        final int[][] matrixC = new int[matrixSize][];
-
-        final int[][] matrixBT = new int[matrixSize][matrixSize];
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = 0; j < matrixSize; j++) {
-                matrixBT[i][j] = matrixB[j][i];
-            }
-        }
-
-        List<Callable<Void>> tasks = new ArrayList<>(matrixSize);
-        for (int j = 0; j < matrixSize; j++) {
-            final int row = j;
-            tasks.add(() -> {
-                final int[] rowC = new int[matrixSize];
-                for (int col = 0; col < matrixSize; col++) {
-                    final int[] rowA = matrixA[row];
-                    final int[] columnB = matrixBT[col];
-                    int sum = 0;
-                    for (int k = 0; k < matrixSize; k++) {
-                        sum += rowA[k] * columnB[k];
-                    }
-                    rowC[col] = sum;
-                }
-                matrixC[row] = rowC;
-                return null;
-            });
-        }
-        executor.invokeAll(tasks);
-        return matrixC;
-    }
-
-
-    public static int[][] concurrentMultiply2(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][];
 
@@ -159,29 +126,6 @@ public class MatrixUtil {
                 for (int col = 0; col < matrixSize; col++) {
                     rowC[col] += elA * rowB[col];
                 }
-            }
-        }
-        return matrixC;
-    }
-
-    public static int[][] simpleMultiply(int[][] matrixA, int[][] matrixB) {
-        final int matrixSize = matrixA.length;
-        final int[][] matrixC = new int[matrixSize][matrixSize];
-
-        final int[][] matrixBT = new int[matrixSize][matrixSize];
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = 0; j < matrixSize; j++) {
-                matrixBT[j][i]=matrixB[i][j];
-            }
-        }
-
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = 0; j < matrixSize; j++) {
-                int sum = 0;
-                for (int k = 0; k < matrixSize; k++) {
-                    sum += matrixA[i][k] * matrixBT[j][k];
-                }
-                matrixC[i][j] = sum;
             }
         }
         return matrixC;
