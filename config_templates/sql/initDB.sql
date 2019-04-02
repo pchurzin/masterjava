@@ -1,9 +1,9 @@
-DROP TABLE IF EXISTS cities;
-DROP SEQUENCE IF EXISTS city_seq;
-
 DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS user_seq;
 DROP TYPE IF EXISTS user_flag;
+
+DROP TABLE IF EXISTS cities;
+DROP SEQUENCE IF EXISTS city_seq;
 
 CREATE SEQUENCE city_seq START 100000;
 
@@ -24,7 +24,7 @@ CREATE TABLE users
   full_name TEXT      NOT NULL,
   email     TEXT      NOT NULL,
   flag      user_flag NOT NULL,
-  city      INTEGER REFERENCES cities (id)
+  city      INTEGER   NOT NULL REFERENCES cities (id)
 );
 
 CREATE UNIQUE INDEX email_idx ON users (email);
