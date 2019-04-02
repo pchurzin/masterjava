@@ -9,12 +9,20 @@ import lombok.*;
 @NoArgsConstructor
 public class User extends BaseEntity {
     @Column("full_name")
-    private @NonNull String fullName;
-    private @NonNull String email;
-    private @NonNull UserFlag flag;
+    @NonNull
+    private String fullName;
 
-    public User(Integer id, String fullName, String email, UserFlag flag) {
-        this(fullName, email, flag);
-        this.id=id;
+    @NonNull
+    private String email;
+
+    @NonNull
+    private UserFlag flag;
+
+    @NonNull
+    private City city;
+
+    public User(Integer id, String fullName, String email, UserFlag flag, City city) {
+        this(fullName, email, flag, city);
+        this.id = id;
     }
 }
