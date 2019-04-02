@@ -1,16 +1,30 @@
+DROP TABLE IF EXISTS cities;
+DROP SEQUENCE IF EXISTS city_seq;
+
 DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS user_seq;
 DROP TYPE IF EXISTS user_flag;
+
+CREATE SEQUENCE city_seq START 100000;
+
+CREATE TABLE cities
+(
+  id    INTEGER PRIMARY KEY DEFAULT nextval('city_seq'),
+  key   TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL
+);
 
 CREATE TYPE user_flag AS ENUM ('active', 'deleted', 'superuser');
 
 CREATE SEQUENCE user_seq START 100000;
 
-CREATE TABLE users (
+CREATE TABLE users
+(
   id        INTEGER PRIMARY KEY DEFAULT nextval('user_seq'),
-  full_name TEXT NOT NULL,
-  email     TEXT NOT NULL,
-  flag      user_flag NOT NULL
+  full_name TEXT      NOT NULL,
+  email     TEXT      NOT NULL,
+  flag      user_flag NOT NULL,
+  city      INTEGER REFERENCES cities (id)
 );
 
 CREATE UNIQUE INDEX email_idx ON users (email);
