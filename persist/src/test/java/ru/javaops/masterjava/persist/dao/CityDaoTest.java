@@ -7,9 +7,6 @@ import org.junit.Test;
 import ru.javaops.masterjava.persist.CityTestData;
 import ru.javaops.masterjava.persist.model.City;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static ru.javaops.masterjava.persist.CityTestData.FIRST2_CITIES;

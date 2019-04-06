@@ -1,16 +1,13 @@
 package ru.javaops.masterjava.persist.dao;
 
-import com.bertoncelj.jdbi.entitymapper.EntityMapperFactory;
 import one.util.streamex.IntStreamEx;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.BatchChunkSize;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
-import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.PersistException;
 import ru.javaops.masterjava.persist.dao.bind.BindUser;
 import ru.javaops.masterjava.persist.dao.mapper.UserMapper;
-import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.User;
 
 import java.util.List;
@@ -50,7 +47,7 @@ public abstract class UserDao implements AbstractDao {
             " VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :city)")
     abstract void insertWitId(@BindUser User user);
 
-//    @SqlQuery("SELECT u.*, c.* FROM users u INNER JOIN cities c ON u.city = c.id ORDER BY u.full_name, u.email LIMIT :it")
+    //    @SqlQuery("SELECT u.*, c.* FROM users u INNER JOIN cities c ON u.city = c.id ORDER BY u.full_name, u.email LIMIT :it")
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);
 
