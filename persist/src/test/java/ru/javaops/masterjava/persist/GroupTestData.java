@@ -23,6 +23,7 @@ public class GroupTestData {
     }
 
     public static void setUp() {
+        ProjectTestData.setUp();
         GroupDao dao = DBIProvider.getDao(GroupDao.class);
         dao.clean();
         DBIProvider.getDBI().useTransaction((conn, status) -> {
