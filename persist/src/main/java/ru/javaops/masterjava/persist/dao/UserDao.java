@@ -4,16 +4,23 @@ import com.bertoncelj.jdbi.entitymapper.EntityMapperFactory;
 import one.util.streamex.IntStreamEx;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.BatchChunkSize;
+import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.PersistException;
+import ru.javaops.masterjava.persist.dao.bind.BindUser;
+import ru.javaops.masterjava.persist.dao.mapper.UserMapper;
+import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.User;
 
 import java.util.List;
 
-@RegisterMapperFactory(EntityMapperFactory.class)
+//@RegisterMapperFactory(EntityMapperFactory.class)
+@RegisterMapper(UserMapper.class)
 public abstract class UserDao implements AbstractDao {
 
     public User insert(User user) {
+        checkCity(user);
         if (user.isNew()) {
             int id = insertGeneratedId(user);
             user.setId(id);
@@ -34,13 +41,16 @@ public abstract class UserDao implements AbstractDao {
         return id;
     }
 
-    @SqlUpdate("INSERT INTO users (full_name, email, flag) VALUES (:fullName, :email, CAST(:flag AS USER_FLAG)) ")
+    @SqlUpdate("INSERT INTO users (full_name, email, flag, city) " +
+            "VALUES (:fullName, :email, CAST(:flag AS USER_FLAG), :city) ")
     @GetGeneratedKeys
-    abstract int insertGeneratedId(@BindBean User user);
+    abstract int insertGeneratedId(@BindUser User user);
 
-    @SqlUpdate("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG)) ")
-    abstract void insertWitId(@BindBean User user);
+    @SqlUpdate("INSERT INTO users (id, full_name, email, flag, city)" +
+            " VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :city)")
+    abstract void insertWitId(@BindUser User user);
 
+//    @SqlQuery("SELECT u.*, c.* FROM users u INNER JOIN cities c ON u.city = c.id ORDER BY u.full_name, u.email LIMIT :it")
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);
 
@@ -50,10 +60,11 @@ public abstract class UserDao implements AbstractDao {
     public abstract void clean();
 
     //    https://habrahabr.ru/post/264281/
-    @SqlBatch("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG))" +
+    @SqlBatch("INSERT INTO users (id, full_name, email, flag, city) " +
+            "VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :city)" +
             "ON CONFLICT DO NOTHING")
 //            "ON CONFLICT (email) DO UPDATE SET full_name=:fullName, flag=CAST(:flag AS USER_FLAG)")
-    public abstract int[] insertBatch(@BindBean List<User> users, @BatchChunkSize int chunkSize);
+    public abstract int[] insertBatch(@BindUser List<User> users, @BatchChunkSize int chunkSize);
 
 
     public List<String> insertAndGetConflictEmails(List<User> users) {
@@ -62,5 +73,11 @@ public abstract class UserDao implements AbstractDao {
                 .filter(i -> result[i] == 0)
                 .mapToObj(index -> users.get(index).getEmail())
                 .toList();
+    }
+
+    void checkCity(User user) {
+        if (user.getCity().isNew()) {
+            throw new PersistException("City is not persisted:" + user.getCity());
+        }
     }
 }
