@@ -1,17 +1,20 @@
 package ru.javaops.masterjava.persist.dao;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
+import ru.javaops.masterjava.persist.PersistException;
 import ru.javaops.masterjava.persist.UserTestData;
 import ru.javaops.masterjava.persist.model.User;
 
 import java.util.List;
 
 import static ru.javaops.masterjava.persist.UserTestData.FIST5_USERS;
+import static ru.javaops.masterjava.persist.UserTestData.USER_BAD_CITY;
 
 public class UserDaoTest extends AbstractDaoTest<UserDao> {
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
 
     public UserDaoTest() {
         super(UserDao.class);
@@ -45,5 +48,12 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
         int seq1 = dao.getSeqAndSkip(5);
         int seq2 = dao.getSeqAndSkip(1);
         Assert.assertEquals(5, seq2 - seq1);
+    }
+
+    @Test
+    public void insertUserWithUnknownCity() {
+        exceptionRule.expect(PersistException.class);
+        exceptionRule.expectMessage("City is not persisted");
+        dao.insert(USER_BAD_CITY);
     }
 }
