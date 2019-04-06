@@ -14,17 +14,11 @@ import java.util.List;
 
 //@RegisterMapperFactory(EntityMapperFactory.class)
 @RegisterMapper(UserMapper.class)
-public abstract class UserDao implements AbstractDao {
-
+public abstract class UserDao extends BaseEntityDao<User> {
+    @Override
     public User insert(User user) {
         checkCity(user);
-        if (user.isNew()) {
-            int id = insertGeneratedId(user);
-            user.setId(id);
-        } else {
-            insertWitId(user);
-        }
-        return user;
+        return super.insert(user);
     }
 
     @SqlQuery("SELECT nextval('user_seq')")
@@ -38,11 +32,13 @@ public abstract class UserDao implements AbstractDao {
         return id;
     }
 
+    @Override
     @SqlUpdate("INSERT INTO users (full_name, email, flag, city) " +
             "VALUES (:fullName, :email, CAST(:flag AS USER_FLAG), :city) ")
     @GetGeneratedKeys
     abstract int insertGeneratedId(@BindUser User user);
 
+    @Override
     @SqlUpdate("INSERT INTO users (id, full_name, email, flag, city)" +
             " VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :city)")
     abstract void insertWitId(@BindUser User user);

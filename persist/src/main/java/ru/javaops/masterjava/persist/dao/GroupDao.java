@@ -11,21 +11,14 @@ import java.util.List;
 
 @RegisterMapperFactory(EntityMapperFactory.class)
 @UseStringTemplate3StatementLocator
-public abstract class GroupDao implements AbstractDao {
-    public Group insert(Group group) {
-        if (group.isNew()) {
-            int id = insertGeneratedId(group);
-            group.setId(id);
-        } else {
-            insertWitId(group);
-        }
-        return group;
-    }
+public abstract class GroupDao extends BaseEntityDao<Group> {
 
+    @Override
     @SqlUpdate("INSERT INTO \"groups\" (name, type) VALUES (:name, CAST(:type AS GROUP_TYPE))")
     @GetGeneratedKeys
     abstract int insertGeneratedId(@BindBean Group group);
 
+    @Override
     @SqlUpdate("INSERT INTO \"groups\" (id, name, type) VALUES (:id, :name, CAST(:type AS GROUP_TYPE)) ")
     abstract void insertWitId(@BindBean Group group);
 

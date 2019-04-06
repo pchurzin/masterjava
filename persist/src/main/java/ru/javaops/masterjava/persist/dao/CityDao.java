@@ -11,21 +11,14 @@ import java.util.List;
 
 @RegisterMapperFactory(EntityMapperFactory.class)
 @UseStringTemplate3StatementLocator
-public abstract class CityDao implements AbstractDao {
-    public City insert(City city) {
-        if (city.isNew()) {
-            int id = insertGeneratedId(city);
-            city.setId(id);
-        } else {
-            insertWitId(city);
-        }
-        return city;
-    }
+public abstract class CityDao extends BaseEntityDao<City> {
 
-    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title)")
+    @Override
     @GetGeneratedKeys
+    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title)")
     abstract int insertGeneratedId(@BindBean City city);
 
+    @Override
     @SqlUpdate("INSERT INTO cities (id, key, title) VALUES (:id, :key, :title) ")
     abstract void insertWitId(@BindBean City city);
 
