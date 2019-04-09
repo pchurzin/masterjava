@@ -6,21 +6,31 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import org.skife.jdbi.v2.sqlobject.stringtemplate.UseStringTemplate3StatementLocator;
 import org.skife.jdbi.v2.unstable.BindIn;
 import ru.javaops.masterjava.persist.model.Group;
+import ru.javaops.masterjava.persist.model.Project;
 
 import java.util.List;
 
 @RegisterMapperFactory(EntityMapperFactory.class)
 @UseStringTemplate3StatementLocator
 public abstract class GroupDao extends BaseEntityDao<Group> {
+    public Group insert(Group group, Project project) {
+        if (group.isNew()) {
+            int id = insertGeneratedId(group, project);
+            group.setId(id);
+        } else {
+            insertWitId(group, project);
+        }
+        return group;
+    }
 
-    @Override
-    @SqlUpdate("INSERT INTO \"groups\" (name, type) VALUES (:name, CAST(:type AS GROUP_TYPE))")
+
+    @SqlUpdate("INSERT INTO \"groups\" (name, type, project) VALUES (:g.name, CAST(:g.type AS GROUP_TYPE), :p.id)")
     @GetGeneratedKeys
-    abstract int insertGeneratedId(@BindBean Group group);
+    abstract int insertGeneratedId(@BindBean("g") Group group, @BindBean("p") Project project);
 
-    @Override
-    @SqlUpdate("INSERT INTO \"groups\" (id, name, type) VALUES (:id, :name, CAST(:type AS GROUP_TYPE)) ")
-    abstract void insertWitId(@BindBean Group group);
+
+    @SqlUpdate("INSERT INTO \"groups\" (id, name, type, project) VALUES (:g.id, :g.name, CAST(:g.type AS GROUP_TYPE), :p.id) ")
+    abstract void insertWitId(@BindBean("g") Group group, @BindBean("p") Project project);
 
     @SqlQuery("SELECT * FROM \"groups\" LIMIT :it")
     public abstract List<Group> getWithLimit(@Bind int limit);

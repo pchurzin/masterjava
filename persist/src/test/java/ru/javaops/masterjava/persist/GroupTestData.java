@@ -26,9 +26,11 @@ public class GroupTestData {
         ProjectTestData.setUp();
         GroupDao dao = DBIProvider.getDao(GroupDao.class);
         dao.clean();
-        DBIProvider.getDBI().useTransaction((conn, status) -> {
-            FIRST2_GROUPS.forEach(dao::insert);
-            dao.insert(GROUP_3);
-        });
+        dao.insert(GROUP_1, ProjectTestData.PROJECT_1);
+        dao.insert(GROUP_2, ProjectTestData.PROJECT_2);
+        dao.insert(GROUP_3, ProjectTestData.PROJECT_2);
     }
 }
+
+
+
