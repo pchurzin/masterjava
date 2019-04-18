@@ -17,6 +17,9 @@ public class UserTestData {
     public static User USER_BAD_CITY;
     public static List<User> FIST5_USERS;
 
+    private static UserDao dao = DBIProvider.getDao(UserDao.class);
+
+
     public static void init() {
         ADMIN = new User("Admin", "admin@javaops.ru", UserFlag.superuser, CityTestData.MSK);
         DELETED = new User("Deleted", "deleted@yandex.ru", UserFlag.deleted, CityTestData.KIV);
@@ -26,15 +29,17 @@ public class UserTestData {
         USER3 = new User("User3", "user3@yandex.ru", UserFlag.active, CityTestData.SPB);
         USER_BAD_CITY = new User("User4", "user4@yandex.ru", UserFlag.active, CityTestData.MNSK);
         FIST5_USERS = ImmutableList.of(ADMIN, DELETED, FULL_NAME, USER1, USER2);
+
+        dao.clean();
     }
 
     public static void setUp() {
-        CityTestData.setUp();
-        UserDao dao = DBIProvider.getDao(UserDao.class);
-        dao.clean();
+        CityTestData.init();
+        init();
+
         DBIProvider.getDBI().useTransaction((conn, status) -> {
-            FIST5_USERS.forEach(dao::insert);
-            dao.insert(USER3);
+            FIST5_USERS.forEach(dao::save);
+            dao.save(USER3);
         });
     }
 }

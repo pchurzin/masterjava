@@ -1,6 +1,9 @@
 package ru.javaops.masterjava.persist.dao;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.javaops.masterjava.persist.UserTestData;
 import ru.javaops.masterjava.persist.model.User;
@@ -17,11 +20,6 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
 
     public UserDaoTest() {
         super(UserDao.class);
-    }
-
-    @BeforeClass
-    public static void init() throws Exception {
-        UserTestData.init();
     }
 
     @Before
