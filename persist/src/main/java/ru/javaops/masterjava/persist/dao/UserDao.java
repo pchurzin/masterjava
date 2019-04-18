@@ -55,10 +55,10 @@ public abstract class UserDao extends BaseEntityDao<User> {
 
     @SqlUpdate("INSERT INTO users (full_name, email, flag, city) VALUES (:u.fullName, :u.email, CAST(:u.flag AS USER_FLAG), :c.id) ")
     @GetGeneratedKeys
-    protected abstract int insert(@BindBean("u") User user, @BindBean("c") City city);
+    abstract int insert(@BindBean("u") User user, @BindBean("c") City city);
 
     @SqlUpdate("UPDATE users (full_name, email, flag, city) VALUES (:u.fullName, :u.email, CAST(:u.flag AS USER_FLAG), :c.id) WHERE id=:u.id")
-    protected abstract int update(@BindBean("u") User user, @BindBean("c") City city);
+    abstract int update(@BindBean("u") User user, @BindBean("c") City city);
 
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);

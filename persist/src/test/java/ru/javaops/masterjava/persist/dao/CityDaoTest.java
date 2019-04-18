@@ -35,7 +35,7 @@ public class CityDaoTest extends AbstractDaoTest<CityDao> {
 
     @Test
     public void getByKeys() {
-        List<City> cities = dao.getByKeys(new String[]{"msk", "spb"});
+        List<City> cities = dao.getByKeys("msk", "spb");
         Assert.assertTrue(cities.containsAll(FIRST2_CITIES));
 
         cities = dao.getByKeys("msk", "spb");
