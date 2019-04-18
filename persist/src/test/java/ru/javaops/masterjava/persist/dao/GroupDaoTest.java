@@ -2,7 +2,6 @@ package ru.javaops.masterjava.persist.dao;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.javaops.masterjava.persist.GroupTestData;
 import ru.javaops.masterjava.persist.model.Group;
@@ -15,11 +14,6 @@ import static ru.javaops.masterjava.persist.GroupTestData.GROUP_1;
 public class GroupDaoTest extends AbstractDaoTest<GroupDao> {
     public GroupDaoTest() {
         super(GroupDao.class);
-    }
-
-    @BeforeClass
-    public static void init() throws Exception {
-//        GroupTestData.init();
     }
 
     @Before
