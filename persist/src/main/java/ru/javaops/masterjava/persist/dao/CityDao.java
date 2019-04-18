@@ -14,30 +14,28 @@ import java.util.List;
 public abstract class CityDao extends BaseEntityDao<City> {
 
     @Override
-    @GetGeneratedKeys
-    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title)")
-    abstract int insertGeneratedId(@BindBean City city);
+    @SqlQuery("SELECT * FROM cities WHERE id=:it")
+    public abstract City getById(@Bind int key);
 
     @Override
-    @SqlUpdate("INSERT INTO cities (id, key, title) VALUES (:id, :key, :title) ")
-    abstract void insertWitId(@BindBean City city);
+    @SqlUpdate("TRUNCATE cities CASCADE")
+    public abstract void clean();
+
+    @Override
+    @GetGeneratedKeys
+    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title)")
+    protected abstract int insert(@BindBean City entity);
+
+    @Override
+    @SqlUpdate("UPDATE cities SET key=:key, title=:title WHERE id=:id")
+    protected abstract int update(@BindBean City city);
 
     @SqlQuery("SELECT * FROM cities LIMIT :it")
     public abstract List<City> getWithLimit(@Bind int limit);
-
-    @SqlQuery("SELECT * FROM cities WHERE id=:it")
-    public abstract City getById(@Bind int key);
 
     @SqlQuery("SELECT * FROM cities WHERE key=:it")
     public abstract City getByKey(@Bind String key);
 
     @SqlQuery("SELECT * FROM cities WHERE key IN (<keys>)")
     public abstract List<City> getByKeys(@BindIn("keys") String... keys);
-
-    @SqlUpdate("TRUNCATE cities CASCADE")
-    @Override
-    public abstract void clean();
-
-    @SqlUpdate("UPDATE cities SET key=:key, title=:title WHERE id=:id")
-    public abstract int update(@BindBean City city);
 }
