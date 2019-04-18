@@ -16,12 +16,11 @@ public class UserMapper implements ResultSetMapper<User> {
     public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
         CityDao cityDao = DBIProvider.getDao(CityDao.class);
         City city = cityDao.getById(r.getInt("city"));
-        User user = new User(
+        return new User(
                 r.getInt("id"),
                 r.getString("full_name"),
                 r.getString("email"),
                 UserFlag.valueOf(r.getString("flag")),
                 city);
-        return user;
     }
 }

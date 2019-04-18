@@ -16,12 +16,11 @@ public class GroupMapper implements ResultSetMapper<Group> {
     public Group map(int index, ResultSet r, StatementContext ctx) throws SQLException {
         ProjectDao projectDao = DBIProvider.getDao(ProjectDao.class);
         Project project = projectDao.getById(r.getInt("project"));
-        Group group = new Group(
+        return new Group(
                 r.getInt("id"),
                 r.getString("name"),
                 GroupType.valueOf(r.getString("type")),
                 project
         );
-        return group;
     }
 }
