@@ -12,4 +12,12 @@ public class Group extends BaseEntity {
 
     @NonNull
     private GroupType type;
+
+    @NonNull
+    private Project project;
+
+    public Group(Integer id, String name, GroupType groupType, Project project) {
+        this(name, groupType,project);
+        this.id = id;
+    }
 }
