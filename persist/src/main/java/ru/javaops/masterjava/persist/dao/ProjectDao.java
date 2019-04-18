@@ -12,32 +12,30 @@ import java.util.List;
 @RegisterMapperFactory(EntityMapperFactory.class)
 @UseStringTemplate3StatementLocator
 public abstract class ProjectDao extends BaseEntityDao<Project> {
+
+    @Override
+    @SqlQuery("SELECT * FROM projects WHERE id=:it")
+    public abstract Project getById(@Bind int key);
+
     @Override
     @GetGeneratedKeys
     @SqlUpdate("INSERT INTO projects (name, description) VALUES (:name, :description)")
-    abstract int insertGeneratedId(@BindBean Project project);
+    protected abstract int insert(@BindBean Project project);
 
     @Override
-    @SqlUpdate("INSERT INTO projects (id, name, description) VALUES (:id, :name, :description) ")
-    abstract void insertWitId(@BindBean Project project);
+    @SqlUpdate("UPDATE projects SET name=:name, description=:description WHERE id=:id")
+    protected abstract int update(@BindBean Project city);
+
+    @Override
+    @SqlUpdate("TRUNCATE projects CASCADE")
+    public abstract void clean();
 
     @SqlQuery("SELECT * FROM projects LIMIT :it")
     public abstract List<Project> getWithLimit(@Bind int limit);
-
-    @SqlQuery("SELECT * FROM projects WHERE id=:it")
-    public abstract Project getById(@Bind int key);
 
     @SqlQuery("SELECT * FROM projects WHERE name=:it")
     public abstract Project getByName(@Bind String name);
 
     @SqlQuery("SELECT * FROM projects WHERE name IN (<names>)")
     public abstract List<Project> getByNames(@BindIn("names") String... names);
-
-    @SqlUpdate("TRUNCATE projects CASCADE")
-    @Override
-    public abstract void clean();
-
-    @SqlUpdate("UPDATE projects SET name=:name, description=:description WHERE id=:id")
-    public abstract int update(@BindBean Project city);
-
 }
