@@ -1,19 +1,30 @@
 package ru.javaops.masterjava.persist.dao;
 
+import ru.javaops.masterjava.persist.PersistException;
 import ru.javaops.masterjava.persist.model.BaseEntity;
 
 public abstract class BaseEntityDao<T extends BaseEntity> implements AbstractDao {
-    public T insert(T entity) {
+    public T save(T entity) {
+        saveDependents(entity);
         if (entity.isNew()) {
-            int id = insertGeneratedId(entity);
+            int id = insert(entity);
             entity.setId(id);
         } else {
-            insertWitId(entity);
+            int updatedRows = update(entity);
+            if (updatedRows != 1) {
+                throw new PersistException("Can't update " + entity);
+            }
         }
         return entity;
     }
 
-    abstract int insertGeneratedId(T entity);
+    public abstract T getById(int key);
 
-    abstract void insertWitId(T entity);
+    protected abstract int insert(T entity);
+
+    protected abstract int update(T entity);
+
+    protected void saveDependents(T entity) {
+
+    }
 }
