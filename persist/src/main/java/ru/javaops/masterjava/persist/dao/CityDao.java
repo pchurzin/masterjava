@@ -23,7 +23,7 @@ public abstract class CityDao extends BaseEntityDao<City> {
 
     @Override
     @GetGeneratedKeys
-    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title)")
+    @SqlUpdate("INSERT INTO cities (key, title) VALUES (:key, :title) ON CONFLICT DO NOTHING")
     protected abstract int insert(@BindBean City entity);
 
     @Override

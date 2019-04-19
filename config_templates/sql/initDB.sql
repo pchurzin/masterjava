@@ -56,7 +56,8 @@ CREATE TABLE users
   full_name TEXT      NOT NULL,
   email     TEXT      NOT NULL,
   flag      user_flag NOT NULL,
-  city      INTEGER   NOT NULL REFERENCES cities (id)
+--   city      INTEGER   NOT NULL REFERENCES cities (id)
+  city INTEGER
 );
 
 CREATE UNIQUE INDEX email_idx ON users (email);
