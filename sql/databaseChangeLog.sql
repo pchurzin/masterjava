@@ -32,3 +32,12 @@ CREATE TABLE user_group (
   group_id INTEGER NOT NULL REFERENCES groups (id),
   CONSTRAINT users_group_idx UNIQUE (user_id, group_id)
 );
+
+--changeset pchurzin:1
+CREATE TABLE email_log (
+  ts TIMESTAMP DEFAULT now(),
+  "to" TEXT NOT NULL,
+  cc TEXT,
+  subject TEXT NOT NULL,
+  result TEXT NOT NULL
+);
