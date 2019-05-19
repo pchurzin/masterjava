@@ -2,6 +2,8 @@ package ru.javaops.masterjava.upload;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.GroupDao;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.bind.JAXBException;
@@ -18,7 +20,9 @@ public class PayloadProcessor {
         final StaxStreamProcessor processor = new StaxStreamProcessor(is);
         val projects = projectProcessor.process(processor);
         val cities = cityProcessor.process(processor);
-        return userProcessor.process(processor, cities, chunkSize);
+        GroupDao groupDao = DBIProvider.getDao(GroupDao.class);
+        val groups = groupDao.getAsMap();
+        return userProcessor.process(processor, cities, groups, chunkSize);
     }
 
     @AllArgsConstructor
