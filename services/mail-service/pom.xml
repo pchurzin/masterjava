@@ -22,5 +22,10 @@
             <artifactId>mail-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>commons-email</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <version>1.5</version>
+        </dependency>
     </dependencies>
 </project>
