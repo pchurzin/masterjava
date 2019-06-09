@@ -39,5 +39,43 @@
             <type>test-jar</type>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>jaxws-rt</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mimepull</artifactId>
+                    <groupId>org.jvnet.mimepull</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jaxb-api</artifactId>
+                    <groupId>javax.xml.bind</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>javax.annotation-api</artifactId>
+                    <groupId>javax.annotation</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>stax-ex</artifactId>
+                    <groupId>org.jvnet.staxex</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>javax.xml.soap-api</artifactId>
+                    <groupId>javax.xml.soap</groupId>
+                </exclusion>
+            </exclusions>
+            <groupId>com.sun.xml.ws</groupId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <artifactId>stax-ex</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
+            <groupId>org.jvnet.staxex</groupId>
+            <version>1.7.8</version>
+        </dependency>
     </dependencies>
 </project>
