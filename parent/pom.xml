@@ -18,7 +18,7 @@
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
 
-        <masterjava.config>/home/cpv/work/config/masterjava</masterjava.config>
+        <masterjava.config>/home/cpv/work/configs/masterjava</masterjava.config>
         <dependency.locations.enabled>false</dependency.locations.enabled>
     </properties>
 
