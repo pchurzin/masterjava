@@ -40,9 +40,14 @@ public class SendServlet extends HttpServlet {
         String subj = req.getParameter("subj");
         String body = req.getParameter("body");
         String[] emails = req.getParameterValues("emails");
-
+        boolean isBulk = req.getParameter("isBulk") != null;
+        String result = "";
         Set<Addressee> addressees = StreamEx.of(emails).map(Addressee::new).toSet();
-        String result = MailWSClient.sendToGroup(addressees, Collections.emptySet(), subj, body);
+        if (isBulk) {
+            result = MailWSClient.sendBulk(addressees, subj, body).toString();
+        } else {
+            result = MailWSClient.sendToGroup(addressees, Collections.emptySet(), subj, body);
+        }
 
         final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale(),
                 ImmutableMap.of("message", result));
