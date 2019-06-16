@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Send mail</title>
+</head>
+<body>
+<form action="" method="post">
+    <!--/*@thymesVar id="message" type="java.lang.String"*/-->
+    <h2 th:if="!${message.isEmpty()}" th:text="${message}">Message</h2>
+    <h3>Message</h3>
+    <p>
+        <label for="subj">Message subject</label>
+        <input id="subj" type="text" name="subj">
+    </p>
+    <p>
+        <textarea id="body" name="body" cols="80" rows="10">Message body</textarea>
+    </p>
+    <!--/*@thymesVar id="user" type="ru.javaops.masterjava.persist.model.User"*/-->
+    <p th:each="user : ${users}">
+        <label for="emails" th:text="${user.email}">email</label>
+        <input id="emails" type="checkbox" name="emails" th:value="${user.email}">
+    </p>
+    <p>
+        <input type="submit" value="Send" name="submit">
+    </p>
+</form>
+</body>
+</html>
