@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -40,6 +40,7 @@
                             <directory>${masterjava.config}</directory>
                             <includes>
                                 <include>wsdl/mailService.wsdl</include>
+                                <include>wsdl/common.xsd</include>
                             </includes>
                             <targetPath>WEB-INF</targetPath>
                         </resource>
@@ -56,59 +57,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>commons-email</artifactId>
             <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
             <version>1.5</version>
         </dependency>
         <dependency>
-            <artifactId>persist</artifactId>
             <groupId>${project.groupId}</groupId>
+            <artifactId>persist</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>persist</artifactId>
             <groupId>${project.groupId}</groupId>
-            <scope>test</scope>
+            <artifactId>persist</artifactId>
+            <version>${project.version}</version>
             <type>test-jar</type>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>jaxws-rt</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>mimepull</artifactId>
-                    <groupId>org.jvnet.mimepull</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jaxb-api</artifactId>
-                    <groupId>javax.xml.bind</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>javax.annotation-api</artifactId>
-                    <groupId>javax.annotation</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>stax-ex</artifactId>
-                    <groupId>org.jvnet.staxex</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>javax.xml.soap-api</artifactId>
-                    <groupId>javax.xml.soap</groupId>
-                </exclusion>
-            </exclusions>
-            <groupId>com.sun.xml.ws</groupId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <artifactId>stax-ex</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-            </exclusions>
-            <groupId>org.jvnet.staxex</groupId>
-            <version>1.7.8</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
