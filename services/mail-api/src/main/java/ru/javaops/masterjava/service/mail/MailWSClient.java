@@ -25,7 +25,7 @@ public class MailWSClient {
     private static final String USER = MAIL_WS_CONFIG.getString("user");
     private static final String PASSWORD = MAIL_WS_CONFIG.getString("password");
     private static final SoapLoggingHandlers.ClientHandler LOGGING_HANDLER =
-            new SoapLoggingHandlers.ClientHandler(Level.valueOf(MAIL_WS_CONFIG.getString("client.debug")));
+            new SoapLoggingHandlers.ClientHandler(Level.valueOf(MAIL_WS_CONFIG.getString("debug.client")));
 
     public static String AUTH_HEADER = AuthUtil.encodeBasicAuthHeader(USER, PASSWORD);
 
