@@ -1,38 +1,42 @@
 package ru.javaops.masterjava.service.mail;
 
+import lombok.extern.slf4j.Slf4j;
+import one.util.streamex.StreamEx;
+import ru.javaops.masterjava.ExceptionType;
+import ru.javaops.masterjava.web.WebStateException;
+import ru.javaops.masterjava.web.WsClient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
+@Slf4j
 public class MailServiceExecutor {
-    private static final String OK = "OK";
 
     private static final String INTERRUPTED_BY_FAULTS_NUMBER = "+++ Interrupted by faults number";
     private static final String INTERRUPTED_BY_TIMEOUT = "+++ Interrupted by timeout";
-    private static final String INTERRUPTED_EXCEPTION = "+++ InterruptedException";
 
-    private final ExecutorService mailExecutor = Executors.newFixedThreadPool(8);
+    private static final ExecutorService mailExecutor = Executors.newFixedThreadPool(8);
 
-    public GroupResult sendToList(final String template, final Set<String> emails) throws Exception {
+    public static GroupResult sendBulk(final Set<Addressee> addressees, final String subject, final String body, List<Attachment> attachments) throws WebStateException {
         final CompletionService<MailResult> completionService = new ExecutorCompletionService<>(mailExecutor);
 
-        List<Future<MailResult>> futures = emails.stream()
-                .map(email -> completionService.submit(() -> sendToUser(template, email)))
-                .collect(Collectors.toList());
+        List<Future<MailResult>> futures = StreamEx.of(addressees)
+                .map(addressee -> completionService.submit(() -> MailSender.sendTo(addressee, subject, body, attachments)))
+                .toList();
 
         return new Callable<GroupResult>() {
             private int success = 0;
             private List<MailResult> failed = new ArrayList<>();
 
             @Override
-            public GroupResult call() {
+            public GroupResult call() throws WebStateException {
                 while (!futures.isEmpty()) {
                     try {
                         Future<MailResult> future = completionService.poll(10, TimeUnit.SECONDS);
                         if (future == null) {
-                            return cancelWithFail(INTERRUPTED_BY_TIMEOUT);
+                            cancel(INTERRUPTED_BY_TIMEOUT, null);
                         }
                         futures.remove(future);
                         MailResult mailResult = future.get();
@@ -41,101 +45,28 @@ public class MailServiceExecutor {
                         } else {
                             failed.add(mailResult);
                             if (failed.size() >= 5) {
-                                return cancelWithFail(INTERRUPTED_BY_FAULTS_NUMBER);
+                                cancel(INTERRUPTED_BY_FAULTS_NUMBER, null);
                             }
                         }
                     } catch (ExecutionException e) {
-                        return cancelWithFail(e.getCause().toString());
+                        cancel(null, e.getCause());
                     } catch (InterruptedException e) {
-                        return cancelWithFail(INTERRUPTED_EXCEPTION);
+                        cancel(INTERRUPTED_BY_TIMEOUT, null);
                     }
                 }
-/*
-                for (Future<MailResult> future : futures) {
-                    MailResult mailResult;
-                    try {
-                        mailResult = future.get(10, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        return cancelWithFail(INTERRUPTED_EXCEPTION);
-                    } catch (ExecutionException e) {
-                        return cancelWithFail(e.getCause().toString());
-                    } catch (TimeoutException e) {
-                        return cancelWithFail(INTERRUPTED_BY_TIMEOUT);
-                    }
-                    if (mailResult.isOk()) {
-                        success++;
-                    } else {
-                        failed.add(mailResult);
-                        if (failed.size() >= 5) {
-                            return cancelWithFail(INTERRUPTED_BY_FAULTS_NUMBER);
-                        }
-                    }
-                }
-*/
-                return new GroupResult(success, failed, null);
+                GroupResult groupResult = new GroupResult(success, failed);
+                log.info("groupResult: {}", groupResult);
+                return groupResult;
             }
 
-            private GroupResult cancelWithFail(String cause) {
+            private void cancel(String cause, Throwable t) throws WebStateException {
                 futures.forEach(f -> f.cancel(true));
-                return new GroupResult(success, failed, cause);
+                if (cause != null) {
+                    throw new WebStateException(cause, ExceptionType.EMAIL);
+                } else {
+                    throw WsClient.getWebStateException(t, ExceptionType.EMAIL);
+                }
             }
         }.call();
-    }
-
-    // dummy realization
-    public MailResult sendToUser(String template, String email) throws Exception {
-        try {
-            Thread.sleep(500);  //delay
-        } catch (InterruptedException e) {
-            // log cancel;
-            return null;
-        }
-        return Math.random() < 0.7 ? MailResult.ok(email) : MailResult.error(email, "Error");
-    }
-
-    public static class MailResult {
-        private final String email;
-        private final String result;
-
-        private static MailResult ok(String email) {
-            return new MailResult(email, OK);
-        }
-
-        private static MailResult error(String email, String error) {
-            return new MailResult(email, error);
-        }
-
-        public boolean isOk() {
-            return OK.equals(result);
-        }
-
-        private MailResult(String email, String cause) {
-            this.email = email;
-            this.result = cause;
-        }
-
-        @Override
-        public String toString() {
-            return '(' + email + ',' + result + ')';
-        }
-    }
-
-    public static class GroupResult {
-        private final int success; // number of successfully sent email
-        private final List<MailResult> failed; // failed emails with causes
-        private final String failedCause;  // global fail cause
-
-        public GroupResult(int success, List<MailResult> failed, String failedCause) {
-            this.success = success;
-            this.failed = failed;
-            this.failedCause = failedCause;
-        }
-
-        @Override
-        public String toString() {
-            return "Success: " + success + '\n' +
-                    "Failed: " + failed.toString() + '\n' +
-                    (failedCause == null ? "" : "Failed cause" + failedCause);
-        }
     }
 }

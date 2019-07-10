@@ -13,6 +13,7 @@ public class MainMatrix {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         final int[][] matrixA = MatrixUtil.create(MATRIX_SIZE);
         final int[][] matrixB = MatrixUtil.create(MATRIX_SIZE);
+        final int[][] testMatrix = MatrixUtil.simpleMultiply(matrixA, matrixB);
 
         double singleThreadSum = 0.;
         double concurrentThreadSum = 0.;
@@ -24,6 +25,10 @@ public class MainMatrix {
             double duration = (System.currentTimeMillis() - start) / 1000.;
             out("Single thread time, sec: %.3f", duration);
             singleThreadSum += duration;
+
+            if (!MatrixUtil.compare(matrixC, testMatrix)) {
+                System.err.println("Single thread multiplication failed");
+            }
 
             start = System.currentTimeMillis();
             final int[][] concurrentMatrixC = MatrixUtil.concurrentMultiplyStreams(matrixA, matrixB, Runtime.getRuntime().availableProcessors() - 1);
