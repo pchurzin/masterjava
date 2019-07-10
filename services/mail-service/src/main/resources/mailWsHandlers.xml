@@ -3,6 +3,10 @@
   http://java.sun.com/xml/ns/javaee/javaee_web_services_metadata_handler_2_0.xsd">
     <handler-chain>
         <handler>
+            <handler-name>MailServiceSecurityHandler</handler-name>
+            <handler-class>ru.javaops.masterjava.service.mail.handlers.SoapServerMailSecurityHandler</handler-class>
+        </handler>
+        <handler>
             <handler-name>SoapLoggingHandler</handler-name>
             <handler-class>ru.javaops.masterjava.web.handler.SoapLoggingHandlers$ServerHandler</handler-class>
         </handler>
