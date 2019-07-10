@@ -6,5 +6,9 @@
             <handler-name>SoapLoggingHandler</handler-name>
             <handler-class>ru.javaops.masterjava.web.handler.SoapLoggingHandlers$ServerHandler</handler-class>
         </handler>
+        <handler>
+            <handler-name>StatisticsHandler</handler-name>
+            <handler-class>ru.javaops.masterjava.web.handler.SoapStatisticsHandler</handler-class>
+        </handler>
     </handler-chain>
 </handler-chains>

@@ -11,7 +11,7 @@ public class Statistics {
     public static void count(String payload, long startTime, RESULT result) {
         long now = System.currentTimeMillis();
         int ms = (int) (now - startTime);
-        log.info(payload + " " + result.name() + " execution time(ms): " + ms);
+        log.info("\n" + payload + "\n" + result.name() + "\nexecution time(ms): " + ms);
         // place for statistics staff
 
     }
