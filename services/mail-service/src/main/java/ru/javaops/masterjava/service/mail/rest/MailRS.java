@@ -11,12 +11,10 @@ import ru.javaops.masterjava.service.mail.MailWSClient;
 import ru.javaops.masterjava.service.mail.util.Attachments;
 import ru.javaops.masterjava.web.WebStateException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
 @Path("/")
@@ -31,6 +29,7 @@ public class MailRS {
     @POST
     @Path("send")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GroupResult send(@NotBlank @FormDataParam("users") String users,
                             @FormDataParam("subject") String subject,
                             @NotBlank @FormDataParam("body") String body,
@@ -39,8 +38,16 @@ public class MailRS {
         if (file == null) {
             return MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, Collections.emptyList());
         } else {
-            Attachment attachment = Attachments.getAttachment(disposition.getFileName(), file);
-            return MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, Collections.singletonList(attachment));
+            String name = disposition.getFileName();
+            // UTF-8 encoding workaround: https://java.net/jira/browse/JERSEY-3032
+            try {
+                name = new String(name.getBytes("ISO8859_1"), "UTF-8");
+            } catch (UnsupportedEncodingException ignored) {
+
+            }
+
+            Attachment attachment = Attachments.getAttachment(name, file);
+            return MailWSClient.sendBulk(MailWSClient.split(users), subject, body, Collections.singletonList(attachment));
         }
     }
 }
