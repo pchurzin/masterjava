@@ -1,18 +1,27 @@
 package ru.javaops.masterjava.webapp;
 
+import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
+import ru.javaops.masterjava.service.mail.Attachment;
+import ru.javaops.masterjava.service.mail.Mail;
+import ru.javaops.masterjava.service.mail.util.Attachments;
 
 import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.lang.IllegalStateException;
+import java.util.Collections;
+import java.util.List;
 
+@MultipartConfig
 @WebServlet("/sendJms")
 @Slf4j
 public class JmsSendServlet extends HttpServlet {
@@ -55,7 +64,11 @@ public class JmsSendServlet extends HttpServlet {
             String users = req.getParameter("users");
             String subject = req.getParameter("subject");
             String body = req.getParameter("body");
-            result = sendJms(users, subject, body);
+            Part filePart = req.getPart("attach");
+
+            result = sendJms(users, subject, body,
+                    filePart == null ? null :
+                        ImmutableList.of(Attachments.getAttachment(filePart.getSubmittedFileName(), filePart.getInputStream())));
             log.info("Processing finished with result: {}", result);
         } catch (Exception e) {
             log.error("Processing failed", e);
@@ -64,10 +77,10 @@ public class JmsSendServlet extends HttpServlet {
         resp.getWriter().write(result);
     }
 
-    private synchronized String sendJms(String users, String subject, String body) throws JMSException {
-        TextMessage testMessage = session.createTextMessage();
-        testMessage.setText(subject);
-        producer.send(testMessage);
+    private synchronized String sendJms(String users, String subject, String body, List<Attachment> attachments) throws JMSException {
+        Mail mail = new Mail(users, subject, body, Collections.emptyList());
+        ObjectMessage message = session.createObjectMessage(mail);
+        producer.send(message);
         return "Successfully sent JMS message";
     }
 }

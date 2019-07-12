@@ -55,6 +55,12 @@
 <script type="text/javascript">
     var transport = "SOAP"; //default
 
+    var transportUrls = {
+        "REST" : "/mail/rest/send",
+        "SOAP" : "sendSoap",
+        "JMS"  : "sendJms"
+    };
+
     function setTransport(value) {
         transport = value;
     }
@@ -71,7 +77,6 @@
         }
 
         var param;
-        if (transport === "SOAP" || transport === "REST") {
             // https://stackoverflow.com/a/5976031/548473
             var data = new FormData();
             data.append('users', users);
@@ -80,18 +85,11 @@
             var attach = $('#attach')[0].files[0];
             if (attach) data.append('attach', attach);
             param = {
-                url: (transport === "REST" ? "/mail/rest/send" : "sendSoap"),
+                url: transportUrls[transport],
                 data: data,
                 contentType: false,
                 processData: false
             };
-        } else if (transport === "JMS") {
-            param = {
-                url: "sendJms",
-                data: "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val(),
-                contentType: "application/x-www-form-urlencoded"
-            };
-        }
 
 //        https://stackoverflow.com/a/22213543/548473
         $.post(param).done(function (result) {
