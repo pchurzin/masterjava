@@ -6,9 +6,11 @@ import com.google.common.collect.Iterables;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import ru.javaops.masterjava.service.mail.Addressee;
 import ru.javaops.masterjava.service.mail.Attachment;
+import ru.javaops.masterjava.service.mail.GroupResult;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -66,5 +68,21 @@ public class MailUtils {
         default String getName() {
             return "";
         }
+    }
+
+    @Value
+    public static class AkkaGroupResult implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private GroupResult groupResult;
+        private int code;
+    }
+
+    @Value
+    public static class AkkaMailObject implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private MailObject mailObject;
+        private int code;
     }
 }
